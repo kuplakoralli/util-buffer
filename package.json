@@ -1,0 +1,42 @@
+{
+  "name": "util-buffer",
+  "version": "0.0.1",
+  "description": "Utility buffer that helps converting binary data between buffers and string representations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "mocha --reporter spec --require ts-node/register test/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuplakoralli/util-buffer.git"
+  },
+  "keywords": [
+    "buffer",
+    "node",
+    "typescript",
+    "base64",
+    "hex",
+    "base64url"
+  ],
+  "author": "Ilkka Pietikäinen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kuplakoralli/util-buffer/issues"
+  },
+  "homepage": "https://github.com/kuplakoralli/util-buffer#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.16",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.14.41",
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0",
+    "ts-loader": "^9.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
+}
