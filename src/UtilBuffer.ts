@@ -9,7 +9,7 @@ export enum UtilBufferEncoding {
 
 export class UtilBuffer {
 
-    private readonly buffer: ArrayBuffer;
+    private readonly buffer: Uint8Array;
     public readonly length: number;
 
     private static base64regex = /(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
@@ -39,13 +39,45 @@ export class UtilBuffer {
             }
             this.length = this.buffer.byteLength;
         } else {
-            this.buffer = inputData;
-            this.length = inputData.byteLength;
+            let u8 = UtilBuffer.convertToU8Array(inputData);
+            this.buffer = u8;
+            this.length = u8.byteLength;
         }
     }
 
+    private static convertToU8Array(array: ArrayBuffer): Uint8Array {
+        if(array instanceof Uint8Array) {
+            return array;
+        }
+        else if(array instanceof Uint16Array) {
+            let u8 = new Uint8Array(array.byteLength);
+            for(let i = 0; i < array.length; i++) {
+                u8[2 * i] = array[i] >> 8;
+                u8[2 * i + 1] = 0xFF & array[i];
+            }
+            return u8;
+        }
+        else if(array instanceof Uint32Array) {
+            let u8 = new Uint8Array(array.byteLength);
+            for(let i = 0; i < array.length; i++) {
+                u8[4 * i] = array[i] >> 24;
+                u8[4 * i + 1] = (array[i] >> 16) & 0xFF;
+                u8[4 * i + 2] = (array[i] >> 8) & 0xFF;
+                u8[4 * i + 3] = array[i] & 0xFF
+            }
+            return u8;
+        }
+        else if(array instanceof ArrayBuffer) {
+            return new Uint8Array(array);
+        }
+        else {
+            throw "Not known format";
+        }
+
+    }
+
     public getArray(): Uint8Array {
-        return this.buffer instanceof Uint8Array ? this.buffer : new Uint8Array(this.buffer)
+        return this.buffer;
     }
 
     public to(encoding: UtilBufferEncoding = UtilBufferEncoding.UTF8, withOption: boolean = false): string | ArrayBuffer {
@@ -104,12 +136,14 @@ export class UtilBuffer {
     }
 
     public static concat(A: UtilBuffer, B: UtilBuffer): UtilBuffer {
-        let aBuffer = A.getArray();
-        let bBuffer = B.getArray();
-        let array = new Uint8Array(aBuffer.length + bBuffer.length);
+        let aBuffer: Uint8Array = A.getArray();
+        let bBuffer: Uint8Array = B.getArray();
+
+        let array = new Uint8Array(aBuffer.byteLength + bBuffer.byteLength);
         array.set(aBuffer);
-        array.set(bBuffer, aBuffer.length);
+        array.set(bBuffer, aBuffer.byteLength);
         return new UtilBuffer(array);
+
     }
     
     public static fromString(inputString: string) {

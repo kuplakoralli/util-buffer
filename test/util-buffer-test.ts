@@ -22,6 +22,13 @@ describe("util-buffer library tests", () => {
         expect("0x000000").equals((new UtilBuffer(new ArrayBuffer(3))).toHex(true));
     });
 
+    it('Create buffer from typed arrays', () => {
+        expect("0xa1b1").equals((new UtilBuffer(new Uint16Array([0xa1b1]))).to(UtilBufferEncoding.HEX, true));
+        expect("0xa1b1c2d4").equals((new UtilBuffer(new Uint16Array([0xa1b1, 0xc2d4]))).to(UtilBufferEncoding.HEX, true));
+
+        expect("0xa1b1c2d4").equals((new UtilBuffer(new Uint32Array([0xa1b1c2d4]))).to(UtilBufferEncoding.HEX, true));
+    });
+
     it('Copy buffer and compare', () => {
         let src = UtilBuffer.fromHex("0x001122");
         let dst = src.copy();
@@ -57,6 +64,14 @@ describe("util-buffer library tests", () => {
 
     it('Test concat', () => {
         expect("FooBar").equals(UtilBuffer.concat(UtilBuffer.fromString("Foo"), UtilBuffer.fromString("Bar")).toString());
+
+        let A = new UtilBuffer(new Uint16Array([1234]));
+        expect(A.length).equal(2);
+
+        let B = UtilBuffer.random(55);
+        expect(B.length).equal(55);
+
+        expect(UtilBuffer.concat(A, B).length).equal(57);
     });
 
     it('Test xor', () => {
